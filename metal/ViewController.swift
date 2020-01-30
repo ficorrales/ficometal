@@ -11,55 +11,76 @@ import Metal
 
 class ViewController: UIViewController {
 
-   var device : MTLDevice!
+    var lastFrameTimestamp: CFTimeInterval = 0.0
+
+    
+    var projectionMatrix: Matrix4!
+    var device : MTLDevice!
     var metalLayer : CAMetalLayer!
-    var vertexBuffer: MTLBuffer!
     var pipelineState: MTLRenderPipelineState!
     var commandQueue: MTLCommandQueue!
     var timer: CADisplayLink!
-    
-    
-    let vertexData: [Float] = [
-       0.0,  1.0, 0.0,
-      -1.0, -1.0, 0.0,
-       1.0, -1.0, 0.0
-    ]
+    //var objectToDraw: Triangle!
+    var objectToDraw: Cube!
     
     override func viewDidLoad() {
       super.viewDidLoad()
       
-      //creating the metal device referance
-      device = MTLCreateSystemDefaultDevice()
+        projectionMatrix = Matrix4.makePerspectiveViewAngle(Matrix4.degrees(toRad: 85.0), aspectRatio: Float(self.view.bounds.size.width / self.view.bounds.size.height), nearZ: 0.01, farZ: 100.0)
+        
+        //creating the metal device referance
+        device = MTLCreateSystemDefaultDevice()
       
-      //Creating a CAMetalLayer
-      metalLayer = CAMetalLayer()
-      metalLayer.device = device
-      metalLayer.pixelFormat = .bgra8Unorm
-      metalLayer.framebufferOnly = true
-      metalLayer.frame = view.layer.frame
-      view.layer.addSublayer(metalLayer)
+        //Creating a CAMetalLayer
       
-      //Creating a Vertex Buffer
-      let dataSize = vertexData.count * MemoryLayout.size(ofValue: vertexData[0]) // 1
-      vertexBuffer = device.makeBuffer(bytes: vertexData, length: dataSize, options: [])
+        metalLayer = CAMetalLayer()
+        metalLayer.device = device
+        metalLayer.pixelFormat = .bgra8Unorm
+        metalLayer.framebufferOnly = true
+        metalLayer.frame = view.layer.frame
+        view.layer.addSublayer(metalLayer)
       
       
-      let defaultLibrary = device.makeDefaultLibrary()!
+        //Creating a Vertex Buffer
+     
+        //objectToDraw = Triangle(device: device)
       
-      //adding the fragment function to the library
-      let fragmentProgram = defaultLibrary.makeFunction(name: "basic_fragment")
-      //adding the vertex function to the library
-      let vertexProgram = defaultLibrary.makeFunction(name: "basic_vertex")
+        objectToDraw = Cube(device: device)
+//        objectToDraw.positionX = 0.0
+//        objectToDraw.positionY =  0.0
+//        objectToDraw.positionZ = -2.0
+//        objectToDraw.rotationZ = Matrix4.degrees(toRad: 45);
+//        objectToDraw.scale = 0.5
+
+     
+        
+      
+      
+      
+        let defaultLibrary = device.makeDefaultLibrary()!
+      
+        //adding the fragment function to the library
+      
+        let fragmentProgram = defaultLibrary.makeFunction(name: "basic_fragment")
+        //adding the vertex function to the library
+      
+        let vertexProgram = defaultLibrary.makeFunction(name: "basic_vertex")
           
-      //Creating a Render Pipeline
-      let pipelineStateDescriptor = MTLRenderPipelineDescriptor()
-      pipelineStateDescriptor.vertexFunction = vertexProgram
-      pipelineStateDescriptor.fragmentFunction = fragmentProgram
-      pipelineStateDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
-          
-      pipelineState = try! device.makeRenderPipelineState(descriptor: pipelineStateDescriptor)
+        //Creating a Render Pipeline
       
-      commandQueue = device.makeCommandQueue()
+        let pipelineStateDescriptor = MTLRenderPipelineDescriptor()
+      
+        pipelineStateDescriptor.vertexFunction = vertexProgram
+      
+        pipelineStateDescriptor.fragmentFunction = fragmentProgram
+     
+        pipelineStateDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
+          
+      
+        pipelineState = try! device.makeRenderPipelineState(descriptor: pipelineStateDescriptor)
+      
+      
+        commandQueue = device.makeCommandQueue()
       
       /*********
        
@@ -67,52 +88,54 @@ class ViewController: UIViewController {
        
       ************/
       
-      //Creating a Display Link that calls gameloop everytime the screen refreshes
-      timer = CADisplayLink(target: self, selector: #selector(gameloop))
-      timer.add(to: RunLoop.main, forMode: .default)
+      
+        //Creating a Display Link that calls gameloop everytime the screen refreshes
+        timer = CADisplayLink(target: self, selector: #selector(ViewController.newFrame(displayLink:)))
+        timer.add(to: RunLoop.main, forMode: .default)
 
       
     }
     
+    
+    
     func render() {
-      
       guard let drawable = metalLayer?.nextDrawable() else { return }
-      let renderPassDescriptor = MTLRenderPassDescriptor()
-      renderPassDescriptor.colorAttachments[0].texture = drawable.texture
-      renderPassDescriptor.colorAttachments[0].loadAction = .clear
-      renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(
-        red: 0.0,
-        green: 104.0/255.0,
-        blue: 55.0/255.0,
-        alpha: 1.0)
-      
-      //Creating a Command Buffer
-      let commandBuffer = commandQueue.makeCommandBuffer()!
-      
-    ///  The list of render commands that you wish to execute for this frame. Nothing actually happens until you commit the command buffer, giving you fine-grained control over when things occur
-    ///  A command buffer contains one or more render commands. You’ll create one of these next.
-      
-      //Creating a Render Command Encoder
-      let renderEncoder = commandBuffer
-        .makeRenderCommandEncoder(descriptor: renderPassDescriptor)!
-      renderEncoder.setRenderPipelineState(pipelineState)
-      renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-      renderEncoder
-        .drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3, instanceCount: 1)
-      renderEncoder.endEncoding()
-      
-       //Committing Your Command Buffer
-       commandBuffer.present(drawable)
-       commandBuffer.commit()
+      let worldModelMatrix = Matrix4()
+      worldModelMatrix.translate(0.0, y: 0.0, z: -7.0)
+          
+      objectToDraw.render(commandQueue: commandQueue, pipelineState: pipelineState, drawable: drawable, parentModelViewMatrix: worldModelMatrix, projectionMatrix: projectionMatrix ,clearColor: nil)
 
-      
+
     }
 
-    @objc func gameloop() {
+
+    // 1
+    @objc func newFrame(displayLink: CADisplayLink){
+        
+      if lastFrameTimestamp == 0.0
+      {
+        lastFrameTimestamp = displayLink.timestamp
+      }
+        
+      // 2
+      let elapsed: CFTimeInterval = displayLink.timestamp - lastFrameTimestamp
+      lastFrameTimestamp = displayLink.timestamp
+        
+      // 3
+      gameloop(timeSinceLastUpdate: elapsed)
+    }
+      
+    func gameloop(timeSinceLastUpdate: CFTimeInterval) {
+        
+      // 4
+      objectToDraw.updateWithDelta(delta: timeSinceLastUpdate)
+        
+      // 5
       autoreleasepool {
         self.render()
       }
     }
+
 
 
 }

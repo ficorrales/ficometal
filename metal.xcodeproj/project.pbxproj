@@ -14,6 +14,11 @@
 		AB03BBAA23E12D180071BE03 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB03BBA923E12D180071BE03 /* Assets.xcassets */; };
 		AB03BBAD23E12D180071BE03 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB03BBAB23E12D180071BE03 /* LaunchScreen.storyboard */; };
 		AB03BBB523E12DF30071BE03 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = AB03BBB423E12DF30071BE03 /* Shaders.metal */; };
+		AB03BBB923E22CFC0071BE03 /* Matrix4.m in Sources */ = {isa = PBXBuildFile; fileRef = AB03BBB723E22CFC0071BE03 /* Matrix4.m */; };
+		AB03BBBB23E232240071BE03 /* Vertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB03BBBA23E232240071BE03 /* Vertex.swift */; };
+		AB03BBBD23E2329A0071BE03 /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB03BBBC23E2329A0071BE03 /* Node.swift */; };
+		AB03BBBF23E233AC0071BE03 /* Triangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB03BBBE23E233AC0071BE03 /* Triangle.swift */; };
+		AB03BBC123E23B760071BE03 /* Cube.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB03BBC023E23B760071BE03 /* Cube.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +31,13 @@
 		AB03BBAC23E12D180071BE03 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AB03BBAE23E12D180071BE03 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB03BBB423E12DF30071BE03 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		AB03BBB723E22CFC0071BE03 /* Matrix4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Matrix4.m; sourceTree = "<group>"; };
+		AB03BBB823E22CFC0071BE03 /* Matrix4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix4.h; sourceTree = "<group>"; };
+		AB03BBBA23E232240071BE03 /* Vertex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Vertex.swift; path = ../../matrix4/Vertex.swift; sourceTree = "<group>"; };
+		AB03BBBC23E2329A0071BE03 /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
+		AB03BBBE23E233AC0071BE03 /* Triangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Triangle.swift; sourceTree = "<group>"; };
+		AB03BBC023E23B760071BE03 /* Cube.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cube.swift; sourceTree = "<group>"; };
+		AB03BBC223E23F000071BE03 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +70,12 @@
 		AB03BB9F23E12D160071BE03 /* metal */ = {
 			isa = PBXGroup;
 			children = (
+				AB03BBC223E23F000071BE03 /* BridgingHeader.h */,
+				AB03BBB623E22CFC0071BE03 /* matrix4 */,
+				AB03BBBA23E232240071BE03 /* Vertex.swift */,
+				AB03BBBC23E2329A0071BE03 /* Node.swift */,
+				AB03BBBE23E233AC0071BE03 /* Triangle.swift */,
+				AB03BBC023E23B760071BE03 /* Cube.swift */,
 				AB03BBA023E12D160071BE03 /* AppDelegate.swift */,
 				AB03BBA223E12D160071BE03 /* SceneDelegate.swift */,
 				AB03BBA423E12D160071BE03 /* ViewController.swift */,
@@ -68,6 +86,16 @@
 				AB03BBAE23E12D180071BE03 /* Info.plist */,
 			);
 			path = metal;
+			sourceTree = "<group>";
+		};
+		AB03BBB623E22CFC0071BE03 /* matrix4 */ = {
+			isa = PBXGroup;
+			children = (
+				AB03BBB723E22CFC0071BE03 /* Matrix4.m */,
+				AB03BBB823E22CFC0071BE03 /* Matrix4.h */,
+			);
+			name = matrix4;
+			path = ../../matrix4;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -142,9 +170,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB03BBB523E12DF30071BE03 /* Shaders.metal in Sources */,
+				AB03BBB923E22CFC0071BE03 /* Matrix4.m in Sources */,
 				AB03BBA523E12D160071BE03 /* ViewController.swift in Sources */,
+				AB03BBBB23E232240071BE03 /* Vertex.swift in Sources */,
 				AB03BBA123E12D160071BE03 /* AppDelegate.swift in Sources */,
+				AB03BBC123E23B760071BE03 /* Cube.swift in Sources */,
 				AB03BBA323E12D160071BE03 /* SceneDelegate.swift in Sources */,
+				AB03BBBD23E2329A0071BE03 /* Node.swift in Sources */,
+				AB03BBBF23E233AC0071BE03 /* Triangle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,6 +330,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.fidel.metal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = metal/BridgingHeader.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -315,6 +349,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.fidel.metal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = metal/BridgingHeader.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
